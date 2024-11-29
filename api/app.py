@@ -82,9 +82,12 @@ def recommend_hospitals_cluster_knn(user_lat, user_lon, n_recommendations=5):
     return nearest_hospitals[['facility_name', 'address', 'ratings']].to_dict(orient='records')
 
 
-# Flask app as a serverless function
-def handler(request):
-    """Handles incoming requests as a serverless function."""
+# Create Flask app
+app = Flask(__name__)
+
+@app.route('/recommend', methods=['POST'])
+def recommend_handler():
+    """Handles incoming requests to recommend hospitals."""
     try:
         # Get user input from the request JSON
         user_address = request.json.get('address')
@@ -106,3 +109,7 @@ def handler(request):
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))
