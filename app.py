@@ -8,11 +8,11 @@ from sklearn.cluster import DBSCAN
 from sklearn.neighbors import NearestNeighbors
 from urllib.parse import quote_plus
 
-# Load API Key from .env file
+
 load_dotenv('.env')
 api_key = os.getenv("GOOGLE_API_KEY")
 
-# Replace with your file ID
+
 file_id = "1-2ITUnGFC3p2_YA-M7VCKPfD1iwNIyOe"
 download_url = f"https://drive.google.com/uc?id={file_id}"
 
@@ -82,25 +82,25 @@ def recommend_hospitals_cluster_knn(user_lat, user_lon, n_recommendations=5):
     return nearest_hospitals[['facility_name', 'address', 'ratings']].to_dict(orient='records')
 
 
-# Create Flask app
+
 app = Flask(__name__)
 
 @app.route('/recommend', methods=['POST'])
 def recommend_handler():
     """Handles incoming requests to recommend hospitals."""
     try:
-        # Get user input from the request JSON
+        
         user_address = request.json.get('address')
         
         if not user_address:
             return jsonify({"error": "No address provided."}), 400
 
-        # Geocode the address
+        
         user_lat, user_lon = geocode_address_google(user_address)
         if user_lat is None or user_lon is None:
             return jsonify({"error": "Invalid address or geocoding failed."}), 400
 
-        # Get recommendations
+      
         recommendations = recommend_hospitals_cluster_knn(user_lat, user_lon)
         if not recommendations:
             return jsonify({"message": "No hospitals found in the vicinity."}), 404
